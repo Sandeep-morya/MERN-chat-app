@@ -3,3 +3,12 @@
     padding: 0;
     box-sizing: border-box
 }
+.app{
+    background: url("../homepage_wall.jpg");
+    background-size: cover;
+    background-position-y:bottom;
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    place-items: center;
+}
