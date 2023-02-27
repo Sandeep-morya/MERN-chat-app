@@ -1,7 +1,10 @@
 ﻿require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-const connectDB = require("./config/db")
+
+const userRouter = require("./routes/user.route");
+
+const connectDB = require("./config/db");
 const { MONGO_URL, DBNAME, QUERY, PORT } = process.env;
 
 /* database connection  */
@@ -10,9 +13,11 @@ const app = express();
 
 /* Cross-origin-resource-sharing */
 app.use(cors());
+app.use(express.json())
+app.use("/api", userRouter);
 
 app.get("/", (req, res) => {
-	res.send({ message: "successfull" });
+	res.send({ message: "server is Live" });
 });
 
 /* Listenin the Port */

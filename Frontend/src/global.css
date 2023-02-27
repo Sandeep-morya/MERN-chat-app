@@ -7,8 +7,8 @@
     background: url("../homepage_wall.jpg");
     background-size: cover;
     background-position-y:bottom;
+    background-attachment: fixed;
     width: 100vw;
-    height: 100vh;
     display: flex;
     justify-content:center;
     align-items: center;

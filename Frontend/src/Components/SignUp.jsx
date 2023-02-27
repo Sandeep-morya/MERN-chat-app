@@ -2,21 +2,22 @@
 import axios from 'axios';
 import React, { useState } from 'react'
 import { FaEyeSlash, FaEye, FaAt } from "react-icons/fa"
+import { useNavigate } from 'react-router-dom';
 
 
 
 const initalState = {
-    name: "", email: '', password: '', image:"https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"
+    name: "", email: '', password: '', image: "https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"
 }
 
-const { VITE_CLOUD_NAME, VITE_CLOUDINARY_URL } = import.meta.env
+const { VITE_CLOUD_NAME, VITE_CLOUDINARY_URL, VITE_USER_BASE_URL } = import.meta.env
 
 const SignUp = () => {
     const [show, setShow] = useState(false)
     const [isError, setIsError] = useState(false)
     const [formData, setFormData] = useState(initalState)
     const [isLoading, setIsLoading] = useState(false);
-
+    const navigate = useNavigate();
 
     /* Function to upload Image & setImage URL */
     async function uploadImage(e) {
@@ -33,8 +34,10 @@ const SignUp = () => {
         setIsLoading(true);
         try {
             const { data } = await axios.post(VITE_CLOUDINARY_URL, file);
-            setFormData({...formData,image:data.url})
+            setFormData({ ...formData, image: data.url })
             setIsLoading(false)
+
+
         } catch (error) {
             setIsLoading(false);
             setIsError(true)
@@ -45,7 +48,17 @@ const SignUp = () => {
 
     async function handleClick() {
         setIsLoading(true);
-        console.log(formData)
+        try {
+            const { data } = await axios.post(VITE_USER_BASE_URL + "/register", formData)
+            localStorage.setItem("user", JSON.stringify(data.data)) //1
+            setTimeout(() => {
+                setIsLoading(false) //2
+                navigate("/chats")
+            }, 3000) // 3
+        } catch (error) {
+            setIsLoading(false);
+            setIsError(true)
+        }
     }
     return (
 
@@ -105,10 +118,10 @@ const SignUp = () => {
             {/* Submit */}
 
             <Button
-            onClick={handleClick}
-            colorScheme={'cyan'}
-            isLoading={isLoading}
-            disabled= {isError}
+                onClick={handleClick}
+                colorScheme={'cyan'}
+                isLoading={isLoading}
+                disabled={isError}
             >Create a new Account</Button>
         </Stack>
 

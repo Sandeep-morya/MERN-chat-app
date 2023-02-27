@@ -2,16 +2,16 @@
 	- name
 	- email
 	- password
-	- pic(url of profile picture)
+	- image(url of profile picture)
  */
 const { Schema, model } = require("mongoose");
 
 const userSchema = Schema(
 	{
 		name: { type: String, required: true },
-		email: { type: String, required: true },
+		email: { type: String, required: true ,unique:true},
 		password: { type: String, required: true },
-		pic: {type: String},
+		image: { type: String,required:true},
 	},
 	{
 		timestamps: true,
