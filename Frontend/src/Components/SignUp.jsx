@@ -1,28 +1,51 @@
 ﻿import { Input, InputGroup, InputRightElement, Button, Text, Stack, Center, Heading, Image } from '@chakra-ui/react'
+import axios from 'axios';
 import React, { useState } from 'react'
 import { FaEyeSlash, FaEye, FaAt } from "react-icons/fa"
-import { FcPortraitMode } from "react-icons/fc"
 
 
 
 const initalState = {
-    name: "", email: '', password: ''
+    name: "", email: '', password: '', image:"https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg"
 }
+
+const { VITE_CLOUD_NAME, VITE_CLOUDINARY_URL } = import.meta.env
 
 const SignUp = () => {
     const [show, setShow] = useState(false)
     const [isError, setIsError] = useState(false)
     const [formData, setFormData] = useState(initalState)
-    const [isLoading, setIsLoading] = useState('');
-    const [imageSrc, setImageSrc] = useState("https://icon-library.com/images/anonymous-avatar-icon/anonymous-avatar-icon-25.jpg")
+    const [isLoading, setIsLoading] = useState(false);
 
+
+    /* Function to upload Image & setImage URL */
     async function uploadImage(e) {
-        let file = e.target.files[0];
-        setImageSrc(URL.createObjectURL(file))
+
+        /* Created image Document */
+        let image = e.target.files[0];
+        const file = new FormData();
+        file.append("file", image);
+        file.append("upload_preset", "chat-app");
+        file.append("cloud_name", VITE_CLOUD_NAME);
+
+        /* Image Upload  */
+        setIsError(false);
+        setIsLoading(true);
+        try {
+            const { data } = await axios.post(VITE_CLOUDINARY_URL, file);
+            setFormData({...formData,image:data.url})
+            setIsLoading(false)
+        } catch (error) {
+            setIsLoading(false);
+            setIsError(true)
+        }
     }
 
-    function handleClick() {
-        setShow(!show)
+    /* Fuction to Upload formData to Database */
+
+    async function handleClick() {
+        setIsLoading(true);
+        console.log(formData)
     }
     return (
 
@@ -30,12 +53,13 @@ const SignUp = () => {
         <Stack spacing={"5"} >
 
             <Center borderRadius={'1rem'}>
-                <Image w={200} h={200} src={imageSrc} alt="ds" borderRadius={'50%'} />
+                <Image w={200} h={200} src={formData.image} alt="ds" borderRadius={'50%'} />
             </Center>
-            <Heading size={'md'}>All Fields are required</Heading>
+            <Heading size={'md'}>All Fields</Heading>
             {/* Name Field */}
             <InputGroup size='md'>
                 <Input
+
                     pr='4.5rem'
                     type={'name'}
                     placeholder='Name'
@@ -59,6 +83,7 @@ const SignUp = () => {
             {/* Password Filed */}
             <InputGroup size='md'>
                 <Input
+
                     pr='4.5rem'
                     type={show ? 'text' : 'password'}
                     placeholder='Enter password'
@@ -79,10 +104,12 @@ const SignUp = () => {
 
             {/* Submit */}
 
-            <Button onClick={handleClick} colorScheme={'cyan'}>Create a new Account</Button>
-
-
-
+            <Button
+            onClick={handleClick}
+            colorScheme={'cyan'}
+            isLoading={isLoading}
+            disabled= {isError}
+            >Create a new Account</Button>
         </Stack>
 
 
