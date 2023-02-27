@@ -1,8 +1,11 @@
 ﻿require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
+const connectDB = require("./config/db")
+const { MONGO_URL, DBNAME, QUERY, PORT } = process.env;
 
-const { PORT } = process.env;
+/* database connection  */
+connectDB(MONGO_URL, DBNAME, QUERY);
 const app = express();
 
 /* Cross-origin-resource-sharing */
